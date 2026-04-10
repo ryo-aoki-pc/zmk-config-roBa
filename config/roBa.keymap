@@ -1,8 +1,14 @@
 #include <input/processors.dtsi>
 #include <behaviors.dtsi>
 #include <dt-bindings/zmk/bt.h>
+#include <dt-bindings/zmk/input_transform.h>
 #include <dt-bindings/zmk/keys.h>
 #include <dt-bindings/zmk/pointing.h>
+
+#define TRACKBALL_CURSOR_SPEED_MUL 1
+#define TRACKBALL_CURSOR_SPEED_DIV 1
+#define TRACKBALL_SCROLL_SPEED_MUL 1
+#define TRACKBALL_SCROLL_SPEED_DIV 1
 
 &mt {
     quick-tap-ms = <150>;
@@ -10,23 +16,33 @@
     flavor = "balanced";
 };
 
-&trackball {
-    automouse-layer = <4>;
-    scroll-layers = <5>;
+&zip_temp_layer {
+    excluded-positions = <
+        19 // K
+    >;
 
-    // arrows {
-    //     layers = <3>;
-    //     bindings =
-    //         <&kp RIGHT_ARROW>,
-    //         <&kp LEFT_ARROW>,
-    //         <&kp UP_ARROW>,
-    //         <&kp DOWN_ARROW>;
-
-    //     tick = <10>;
-    //     wait-ms = <5>;
-    //     tap-ms = <5>;
-    // };
+    require-prior-idle-ms = <200>;
 };
+
+&trackball_listener {
+    input-processors = <
+        &zip_temp_layer 4 10000
+        &zip_xy_scaler TRACKBALL_CURSOR_SPEED_MUL TRACKBALL_CURSOR_SPEED_DIV
+    >;
+};
+
+&trackball_listener {
+    scroller {
+        layers = <5>;
+        input-processors = <
+            &zip_xy_to_scroll_mapper
+            &zip_scroll_scaler TRACKBALL_SCROLL_SPEED_MUL TRACKBALL_SCROLL_SPEED_DIV
+            &zip_scroll_transform INPUT_TRANSFORM_X_INVERT
+        >;
+    };
+};
+
+&trackball { };
 
 / {
     combos { compatible = "zmk,combos"; };

@@ -23,6 +23,7 @@
         compatible = "zmk,input-processor-temp-layer";
         #input-processor-cells = <2>;
         excluded-key-positions = <19>;
+        require-prior-idle-ms = <200>;
     };
 
     trackball_listener {

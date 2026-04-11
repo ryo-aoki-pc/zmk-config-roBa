@@ -17,22 +17,15 @@
     flavor = "balanced";
 };
 
-&trackball {
-    scroll-layers = <5>;
+&zip_temp_layer {
+    excluded-positions = <
+        19 // K
+    >;
 
-    // arrows {
-    //     layers = <3>;
-    //     bindings =
-    //         <&kp RIGHT_ARROW>,
-    //         <&kp LEFT_ARROW>,
-    //         <&kp UP_ARROW>,
-    //         <&kp DOWN_ARROW>;
-
-    //     tick = <10>;
-    //     wait-ms = <5>;
-    //     tap-ms = <5>;
-    // };
+    require-prior-idle-ms = <200>;
 };
+
+&mkp_input_listener { input-processors = <&zip_temp_layer 4 10000>; };
 
 / {
     combos { compatible = "zmk,combos"; };

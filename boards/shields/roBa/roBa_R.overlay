@@ -73,3 +73,12 @@
         irq-gpios = <&gpio0 2 (GPIO_ACTIVE_LOW | GPIO_PULL_UP)>;
     };
 };
+
+// P を押したまま USB ケーブルを挿すと、ブートローダになる (src/usb_bootmagic.c)
+/ {
+    usb_bootmagic {
+        compatible = "zmk,usb-bootmagic";
+        row = <0>;
+        column = <4>;
+    };
+};

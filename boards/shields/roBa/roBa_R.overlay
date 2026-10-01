@@ -1,6 +1,7 @@
 #include "roBa.dtsi"
 #include <input/processors.dtsi>
 #include <dt-bindings/zmk/input_transform.h>
+#include <zephyr/dt-bindings/input/input-event-codes.h>
 
 &default_transform {
     col-offset = <6>;
@@ -17,21 +18,53 @@
 };
 
 / {
+    // カーソルの加速 (zmk-input-processor-xy-accel)。LisM と同じ値。ボールを転がす速さ (カウント/秒) に
+    // 応じて移動量に倍率 (1000 = 等倍) を掛ける。速さ 0 で min-factor、speed-threshold で等倍、
+    // speed-max 以上で max-factor になり、その間は直線で補間する。ゆっくり動かしたときは
+    // カーソルを細かく動かし、速く動かしたときは遠くまで動かす。
+    // ゆっくり動かしたときに遅すぎれば min-factor を上げ、速く動かしたときに飛びすぎれば
+    // (Windows の「ポインターの精度を高める」と重なるときなど) max-factor を下げる (1000 で加速なし)
+    trackball_accel: trackball_accel {
+        compatible = "zmk,input-processor-xy-accel";
+        #input-processor-cells = <0>;
+        min-factor = <500>;
+        max-factor = <1300>;
+        speed-threshold = <1000>;
+        speed-max = <4000>;
+    };
+
+    // BLE で送るカーソルのレポートを、指定した ms に 1 回までにまとめる (USB 接続中は素通し)。
+    // ドライバは 8ms ごと (CONFIG_PMW3610_POLLING_RATE_125_SW) に報告し、ZMK はその 1 回ごとに
+    // レポートを 1 つ送る。ほかのキーボードも同じ PC に BLE でつないでいると、送信の機会が足りずに
+    // レポートが溜まり、カーソルが遅れてまとめて動く。間隔に満たない X/Y は次のレポートに足す
+    // (badjeff/zmk-input-processor-report-rate-limit。KUKEY42 と同じ)。
+    // 値は 15: 8ms ごとの報告が 16ms ごとになる。まだカクつくときは 30 (32ms ごと) に上げる
+    trackball_rate_limit: trackball_rate_limit {
+        compatible = "zmk,input-processor-report-rate-limit";
+        #input-processor-cells = <1>;
+        type = <INPUT_EV_REL>;
+        codes = <INPUT_REL_X INPUT_REL_Y>;
+        limit-ble-only;
+    };
+
+    // 加速はセンサーの報告間隔のまま速さを測るため、間隔をまとめる前に置く
     trackball_listener {
         status = "okay";
         compatible = "zmk,input-listener";
         device = <&trackball>;
 
         input-processors =
-            <&zip_xy_scaler 2 1>,
+            <&trackball_accel>,
+            <&trackball_rate_limit 15>,
             <&zip_temp_layer 8 10000>;
 
+        // CPI を 400 から 800 に上げたので、1/16 から 1/32 にしてスクロールの速さを保つ
         scroll-layer {
             layers = <9>;
             input-processors =
                 <&zip_xy_to_scroll_mapper>,
                 <&zip_scroll_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
-                <&zip_scroll_scaler 1 16>;
+                <&zip_scroll_scaler 1 32>;
         };
     };
 };

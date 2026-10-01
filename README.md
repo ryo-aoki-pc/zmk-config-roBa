@@ -4,7 +4,10 @@ roBa のファームウェアです。[zmk-config-LisM](https://github.com/ryo-a
 
 - マイコン: Seeed XIAO nRF52840 (左右とも)。右手側がセントラルで、PMW3610 トラックボールが付いています
 - キーマップ: KUKEY42 と同じ 43 キー配列のため、`config/roBa.keymap` は [zmk-config-KUKEY42](https://github.com/ryo-aoki-pc/zmk-config-KUKEY42) の `config/KUKEY42.keymap` と同一です
-- スクロール: トラックボールの移動量を 1/16 にしてホイールに変換します (`roBa_R.overlay` の `zip_scroll_scaler 1 16`)
+- トラックボール: CPI 800 (`roBa_R.conf` の `CONFIG_PMW3610_CPI`) をそのまま使い、カーソルは 1 カウントで 1 動きます
+- カーソルの加速: ボールを転がす速さに応じて移動量に倍率を掛けます (ゆっくり 0.5 倍 → 1000 カウント/秒で等倍 → 4000 カウント/秒以上で 1.3 倍)。値は LisM と同じで、`roBa_R.overlay` の `trackball_accel` ([zmk-input-processor-xy-accel](https://github.com/ryo-aoki-pc/zmk-input-processor-xy-accel)) で変えられます
+- BLE のレポート: 8ms ごとの報告を 16ms に 1 回までにまとめて送ります (`roBa_R.overlay` の `trackball_rate_limit`。USB 接続中はまとめない)
+- スクロール: トラックボールの移動量を 1/32 にしてホイールに変換します (`roBa_R.overlay` の `zip_scroll_scaler 1 32`。CPI を 400 から 800 に上げたので、以前の 1/16 と同じ速さ)
 - LED: RGB LED ウィジェット (`rgbled_adapter`) は使っていません
 
 ## キー割り当て一覧

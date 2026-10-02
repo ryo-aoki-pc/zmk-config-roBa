@@ -47,6 +47,19 @@
         limit-ble-only;
     };
 
+    // AML の発動条件 (zmk-input-processor-aml-threshold)。LisM と同じ値。リスナーで zip_temp_layer の
+    // 代わりに使い、キー入力の振動などでボールがわずかに動いても AML (MOUS) にしない。止まっていた状態から
+    // 動いた量 (X と Y それぞれ向き付きで足すので、行ったり来たりする振動は打ち消し合う) の大きさが
+    // threshold (加速の後の値 = カーソルの移動量) に達したら zip_temp_layer に渡す。キーを押した・離したあと
+    // require-prior-idle-ms (roBa.keymap の zip_temp_layer の値) の間も渡さない。
+    // まだ振動で AML になるなら threshold を上げ、少し動かしただけでは AML にならないなら下げる
+    aml_threshold: aml_threshold {
+        compatible = "zmk,input-processor-aml-threshold";
+        #input-processor-cells = <2>;
+        temp-layer = <&zip_temp_layer>;
+        threshold = <10>;
+    };
+
     // 加速はセンサーの報告間隔のまま速さを測るため、間隔をまとめる前に置く
     trackball_listener {
         status = "okay";
@@ -56,7 +69,7 @@
         input-processors =
             <&trackball_accel>,
             <&trackball_rate_limit 15>,
-            <&zip_temp_layer 8 10000>;
+            <&aml_threshold 8 10000>;   // 8 = MOUS (マウス移動レイヤーを自動有効化。わずかな動きでは発動しない)
 
         // CPI を 400 から 800 に上げたので、1/16 から 1/32 にしてスクロールの速さを保つ
         scroll-layer {

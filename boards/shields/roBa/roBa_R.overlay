@@ -71,12 +71,15 @@
             <&trackball_rate_limit 15>,
             <&aml_threshold 8 10000>;   // 8 = MOUS (マウス移動レイヤーを自動有効化。わずかな動きでは発動しない)
 
-        // CPI を 400 から 800 に上げたので、1/16 から 1/32 にしてスクロールの速さを保つ
+        // CPI を 400 から 800 に上げたので、1/16 から 1/32 にしてスクロールの速さを保つ。
+        // カーソルはドライバの向き (CONFIG_PMW3610_ORIENTATION_180) のまま使うので、スクロールは
+        // 上下だけ反転する (右へ転がすと右、手前へ転がすと下へスクロール。他の機種と同じ)
         scroll-layer {
             layers = <9>;
             input-processors =
+                <&zip_temp_layer 8 10000>,  // 8 = MOUS (スクロール中も MOUS を維持する)
                 <&zip_xy_to_scroll_mapper>,
-                <&zip_scroll_transform (INPUT_TRANSFORM_X_INVERT | INPUT_TRANSFORM_Y_INVERT)>,
+                <&zip_scroll_transform INPUT_TRANSFORM_Y_INVERT>,
                 <&zip_scroll_scaler 1 32>;
         };
     };

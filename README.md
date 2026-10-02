@@ -8,8 +8,8 @@ roBa のファームウェアです。[zmk-config-LisM](https://github.com/ryo-a
 - カーソルの加速: ボールを転がす速さに応じて移動量に倍率を掛けます (ゆっくり 0.5 倍 → 1000 カウント/秒で等倍 → 4000 カウント/秒以上で 1.3 倍)。値は LisM と同じで、`roBa_R.overlay` の `trackball_accel` ([zmk-input-processor-xy-accel](https://github.com/ryo-aoki-pc/zmk-input-processor-xy-accel)) で変えられます
 - AML の発動条件: キー入力の振動などでボールがわずかに動いても、AML (マウスレイヤー) にしません。キーを押した・離したあと 200ms は発動せず、止まっていた状態からカーソルが 10 以上動いたら発動します。値は LisM と同じで、`roBa_R.overlay` の `aml_threshold` ([zmk-input-processor-aml-threshold](https://github.com/ryo-aoki-pc/zmk-input-processor-aml-threshold)) で変えられます
 - BLE のレポート: 8ms ごとの報告を 16ms に 1 回までにまとめて送ります (`roBa_R.overlay` の `trackball_rate_limit`。USB 接続中はまとめない)
-- スクロール: トラックボールの移動量を 1/32 にしてホイールに変換します (`roBa_R.overlay` の `zip_scroll_scaler 1 32`。CPI を 400 から 800 に上げたので、以前の 1/16 と同じ速さ)
-- LED: RGB LED ウィジェット (`rgbled_adapter`) は使っていません
+- スクロール: トラックボールの移動量を 1/32 にしてホイールに変換します (`roBa_R.overlay` の `zip_scroll_scaler 1 32`。CPI を 400 から 800 に上げたので、以前の 1/16 と同じ速さ)。右へ転がすと右へ、手前へ転がすと下へスクロールし、スクロール中も AML (マウスレイヤー) は切れません
+- LED: XIAO の RGB LED で、バッテリー残量と接続状態を表示します ([zmk-rgbled-widget](https://github.com/caksoylar/zmk-rgbled-widget) の `rgbled_adapter`。LisM など他の XIAO の機種と同じ)
 
 ## キー割り当て一覧
 

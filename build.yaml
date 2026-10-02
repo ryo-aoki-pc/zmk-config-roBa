@@ -3,15 +3,15 @@
 include:
 # Central = Right
   - board: seeeduino_xiao_ble
-    shield: roBa_L
+    shield: roBa_L rgbled_adapter
     artifact-name: roBa_left_peripheral
   - board: seeeduino_xiao_ble
-    shield: roBa_R
+    shield: roBa_R rgbled_adapter
     artifact-name: roBa_right_central
     cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y
 
   - board: seeeduino_xiao_ble
-    shield: roBa_R
+    shield: roBa_R rgbled_adapter
     artifact-name: roBa_right_central_studio
     snippet: studio-rpc-usb-uart
     cmake-args: -DCONFIG_ZMK_STUDIO=y -DCONFIG_ZMK_STUDIO_LOCKING=n -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=y

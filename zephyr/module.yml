@@ -1,4 +1,4 @@
-name: roBa
+name: zmk-config-roBa
 build:
   cmake: .
   kconfig: Kconfig
